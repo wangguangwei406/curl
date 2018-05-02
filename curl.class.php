@@ -17,7 +17,8 @@ class CURL{
 		$this->set_useragent ="Mozilla/5.0 (iPhone; CPU iPhone OS 6_1_4 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/7.0 Mobile/10B350 Safari/9537.53";        // 
 		$this->set_useragent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36";        //
 		$this->cookie_file=dirname(__FILE__)."/cookie_".md5(basename(__FILE__)).".txt";    //初始化cookie文件路径        //
-		$this->cookie_file= SAE_TMP_PATH.TmpFS;        $this->cookie_file = "saekv://cookie_2014.txt";    
+		$this->cookie_file= SAE_TMP_PATH.TmpFS;        
+		$this->cookie_file = "saekv://cookie_2014.txt";    
 	}    
 	//关闭curl    
 	public function close(){        
@@ -32,42 +33,42 @@ class CURL{
 		if(intval($timeout) != 0)        
 			$this->set_time_out = $timeout;        
 			return $this;    
-		}    
+	}    
 		//设置来源页面    
-		public function set_referer($referer = ""){        
-			if (!empty($referer))            
-			curl_setopt($this->ch, CURLOPT_REFERER , $referer);        
-			return $this;    
-		}    
+	public function set_referer($referer = ""){        
+		if (!empty($referer))            
+		curl_setopt($this->ch, CURLOPT_REFERER , $referer);        
+		return $this;    
+	}    
 		//设置cookie存放模式 1客户端、2服务器文件    
-		public function set_cookie_mode($mode = ""){        
-			$this->cookie_mode = $mode;        
+	public function set_cookie_mode($mode = ""){        
+		$this->cookie_mode = $mode;        
+		return $this;    
+	}    
+	//载入cookie    
+	public function load_cookie(){        
+		if($this->cookie_mode == 1 ) {            
+			if(isset($_COOKIE['curl'])){                
+				curl_setopt($this->ch,CURLOPT_COOKIE,$_COOKIE['curl']);            
+			}else{                
+					$this->exec();                
+					curl_setopt($this->ch,CURLOPT_COOKIE,$this->cookie_file);            
+				}        
+			}        
+			if($this->cookie_mode == 2 ) {            
+			curl_setopt($this->ch, CURLOPT_COOKIEFILE , $this->cookie_file);        
+			}        
+			if($this->cookie_mode == 3 ) {            
+				$kv = new SaeKV();            
+				$ret = $kv->init();            
+				$ret = $kv->get('curl_cookie');            
+				if($ret)               
+				curl_setopt($this->ch,CURLOPT_COOKIE, $ret);        
+			}        
 			return $this;    
-		}    
-		//载入cookie    
-		public function load_cookie(){        
-			if($this->cookie_mode == 1 ) {            
-				if(isset($_COOKIE['curl'])){                
-					curl_setopt($this->ch,CURLOPT_COOKIE,$_COOKIE['curl']);            
-				}else{                
-						$this->exec();                
-						curl_setopt($this->ch,CURLOPT_COOKIE,$this->cookie_file);            
-					}        
-				}        
-				if($this->cookie_mode == 2 ) {            
-				curl_setopt($this->ch, CURLOPT_COOKIEFILE , $this->cookie_file);        
-				}        
-				if($this->cookie_mode == 3 ) {            
-					$kv = new SaeKV();            
-					$ret = $kv->init();            
-					$ret = $kv->get('curl_cookie');            
-					if($ret)               
-					curl_setopt($this->ch,CURLOPT_COOKIE, $ret);        
-				}        
-				return $this;    
-		}    
-		//设置保存cookie方式 $cookie_val 模式1为变量 模式2为文件路径    
-		public function save_cookie($cookie_val = "") {        //保存在客户端        
+	}    
+	//设置保存cookie方式 $cookie_val 模式1为变量 模式2为文件路径    
+	public function save_cookie($cookie_val = "") {        //保存在客户端        
 		if($this->cookie_mode == 1 &amp;&amp; $cookie_val){           
 			setcookie('curl',$cookie_val);        
 		}        //保存服务器端        
@@ -86,7 +87,7 @@ class CURL{
 				$ret = $kv->add('curl_cookie', $cookie_val);            
 			}        
 		}        
-			return $this;    
+		return $this;    
 	}    
 	//post参数 (array) $post    
 	public function post ($post = ""){        
@@ -167,3 +168,4 @@ class CURL{
 			throw new Exception("需要先运行,执行exec,再获取信息");
 	}
 }
+
