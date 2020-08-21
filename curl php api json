@@ -1,0 +1,14 @@
+<?php
+$url = "https://ctms.sit.castlestech.cloud/api/login.php";
+$data = json_encode(["username" => "admin", "password" => "672a1c46e9b6411bebb7633a427a83af58519cff9836e758b0d2c00ad8478037"]);
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json',
+    'Content-Length: ' . strlen($data))
+);
+// curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=cci3nhmatbhdsg62k7kc11i9sg");
+$result = curl_exec($ch);
